@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Assembly properties -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>IndyECM.Framework.Configuration</AssemblyName>
+    <RootNamespace>IndyECM.Framework.Configuration</RootNamespace>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildProjectName).xml</DocumentationFile>
+  </PropertyGroup>
+  <!-- External dependencies -->
+  <ItemGroup>
+    <PackageReference Include="System.Data.SqlClient" Version="4.4.3" />
+    <PackageReference Include="Servicestack.Text" Version="5.1.0" />
+  </ItemGroup>
+  <!-- Local dependencies -->
+  <ItemGroup>
+    <ProjectReference Include="..\Definition\IndyECM.Framework.Definition.csproj" />
+  </ItemGroup>
+</Project>
