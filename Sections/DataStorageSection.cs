@@ -77,6 +77,10 @@ namespace IndyECM.Framework.Configuration
             }
             result = builder.ConnectionString;
           }break;
+          case DatabaseType.PostgreSQL:
+          {
+            result = $"Server={Server.Main.Server};Port={Server.Main.Port};User Id={Server.Main.Account};Password={Server.Main.Password};Database={Server.Main.Catalogue}";
+          }break;
           default:
           {
             result = string.Empty;
