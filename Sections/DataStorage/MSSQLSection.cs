@@ -10,9 +10,23 @@ namespace IndyECM.Framework.Configuration
   public sealed class DataStorageMSSQLSection
   {
     ///<summary>
-    /// Gets or sets SingleSignOn authentication
+    /// Enable/disable async processing
     ///</summary>
-    ///<returns>Returns true, when authentication set to SingleSignOn</returns>
+    ///<returns>Returns true, when async processing is enabled</returns>
+    [DataMember]
+    public bool UseAsyncProcessing { get; set; }
+
+    ///<summary>
+    /// Enable/disable context connection
+    ///</summary>
+    ///<returns>Returns true, when context connection is enabled</returns>
+    [DataMember]
+    public bool UseContextConnection { get; set; }
+
+    ///<summary>
+    /// Enable/disable SingleSignOn authentication
+    ///</summary>
+    ///<returns>Returns true, when SingleSignOn authentication enabled</returns>
     [DataMember]
     public bool UseIntegratedSecurity { get; set; }
   }
