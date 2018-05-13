@@ -1,7 +1,7 @@
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
-using IndyECM.Framework.Configuration.Base;
 using IndyECM.Framework.Definition.Enumeration.Types;
+using IndyECM.Framework.Definition.Interfaces.Configuration;
 
 namespace IndyECM.Framework.Configuration
 {
@@ -9,35 +9,19 @@ namespace IndyECM.Framework.Configuration
   /// Data storage connection configuration section
   ///</summary>
   [DataContract]
-  public sealed class DataStorageSection
+  public sealed class DataStorageSection : IReliableStorageServerSection<DatabaseType>
   {
-    ///<summary>
-    /// Storage type
-    ///</summary>
+    /// <inheritdoc />
     [DataMember]
-    public DatabaseType Type = DatabaseType.MSSQL;
+    public IStorageServerSection<DatabaseType> Main { get; set; }
 
-    ///<summary>
-    /// MSSQL specific storage settings
-    ///</summary>
-    ///<returns></returns>
+    /// <inheritdoc />
     [DataMember]
-    public DataStorageMSSQLSection MSSQL = new DataStorageMSSQLSection();
+    public IStorageServerSection<DatabaseType> Fallback { get; set; }
 
-    ///<summary>
-    /// Storage server connection settings
-    ///</summary>
+    /// <inheritdoc />
     [DataMember]
-    public MultiServerStorageSection Server = new MultiServerStorageSection
-    {
-      Main = new StorageServerSection
-      {
-        Provider = "System.Data.SqlClient",
-        Server = "localhost",
-        Catalogue = "IndyECM",
-        Scheme = "2016"
-      }
-    };
+    public IStorageServerSection<DatabaseType> Cache { get; set; }
 
     ///<summary>
     /// Generated connection string, based on configured values
@@ -49,37 +33,42 @@ namespace IndyECM.Framework.Configuration
       {
         var result = string.Empty;
 
-        switch(Type)
+        switch(Main.Type)
         {
           case DatabaseType.MSSQL:
           {
+            var usingIntegratedSecurity = false;
+            if(Main.ExtendedProperties != null && Main.ExtendedProperties.ContainsKey(Main.Type)) {
+              bool.TryParse(Main.ExtendedProperties[Main.Type]["UseIntegratedSecurity"], out usingIntegratedSecurity);
+            }
+
             var builder = new SqlConnectionStringBuilder
             {
               ApplicationName = Settings.Config.Application.Name,
-              ConnectTimeout = (int)Server.Main.ConnectTimeout.TotalSeconds,
-              DataSource = $"{Server.Main.Server},{Server.Main.Port}",
-              InitialCatalog = Server.Main.Catalogue,
-              IntegratedSecurity = MSSQL.UseIntegratedSecurity,
-              LoadBalanceTimeout = (int)Server.Main.LoadBalanceTimeout.TotalSeconds,
+              ConnectTimeout = (int)Main.ConnectTimeout.TotalSeconds,
+              DataSource = $"{Main.Server},{Main.Port}",
+              InitialCatalog = Main.Catalogue,
+              IntegratedSecurity = usingIntegratedSecurity,
+              // TODO: LoadBalanceTimeout = (int)Main..TotalSeconds,
               MinPoolSize = 1,
               MaxPoolSize = 10,
             };
             // If reserve server defined, let connection string know about it
-            if(Server.Fallback != null)
+            if(Fallback != null)
             {
-              builder.FailoverPartner = $"{Server.Fallback.Server},{Server.Fallback.Port}";
+              builder.FailoverPartner = $"{Fallback.Server},{Fallback.Port}";
             }
             // If we dont want to use Single Sign-On, use defined user/password
-            if(!MSSQL.UseIntegratedSecurity)
+            if(!usingIntegratedSecurity)
             {
-              builder.UserID = Server.Main.Account;
-              builder.Password = Server.Main.Password;
+              builder.UserID = Main.Account;
+              builder.Password = Main.Password;
             }
             result = builder.ConnectionString;
           }break;
           case DatabaseType.PostgreSQL:
           {
-            result = $"Server={Server.Main.Server};Port={Server.Main.Port};User Id={Server.Main.Account};Password={Server.Main.Password};Database={Server.Main.Catalogue}";
+            result = $"Server={Main.Server};Port={Main.Port};User Id={Main.Account};Password={Main.Password};Database={Main.Catalogue}";
           }break;
           default:
           {

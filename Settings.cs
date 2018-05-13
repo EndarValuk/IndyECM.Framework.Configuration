@@ -6,7 +6,7 @@ using IndyECM.Framework.Configuration.Schemas;
 namespace IndyECM.Framework.Configuration
 {
   ///<summary>
-  /// Configuration reader class
+  /// Configuration reader
   ///</summary>
   public class Settings
   {

@@ -1,7 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
-using IndyECM.Framework.Configuration.Base;
 using IndyECM.Framework.Definition.Enumeration.Services;
+using IndyECM.Framework.Definition.Interfaces.Configuration;
 
 namespace IndyECM.Framework.Configuration
 {
@@ -9,37 +10,59 @@ namespace IndyECM.Framework.Configuration
   /// Identity and Access Management section model
   ///</summary>
   [DataContract]
-  public sealed class IAMSection
+  public sealed class IAMSection : IStorageServerSection<IamServiceType>
   {
-    ///<summary>
-    /// IAM handler type
-    ///</summary>
-    [DataMember]
-    public IamServiceType Type = IamServiceType.ActiveDirectory;
+#region ICanAuthSection implementation
 
-    ///<summary>
-    /// Настройки сервера обработчика аутентификации пользователей в системе
-    ///</summary>
+    /// <inheritdoc />
     [DataMember]
-    public MultiServerStorageSection Server = new MultiServerStorageSection
-    {
-      Main = new StorageServerSection
-      {
-        Server = "dc01.somedomain.com",
-        Catalogue = "SOMEDOMAIN",
-        Scheme = "DC=somedomain,DC=com"
-      }
-    };
+    public string Account { get; set; }
+
+    /// <inheritdoc />
+    [DataMember]
+    public string Password { get; set; }
+
+#endregion
+
+#region ICanConnectSection implementation
+
+    /// <inheritdoc />
+    [DataMember]
+    public string Server { get; set; }
+
+    /// <inheritdoc />
+    [DataMember]
+    public int Port { get; set; }
+
+    /// <inheritdoc />
+    [DataMember]
+    public TimeSpan ConnectTimeout { get; set; }
+
+#endregion
+
+#region ICanStoreDataSection implementation
+
+    /// <inheritdoc />
+    [DataMember]
+    public IamServiceType Type { get; set; }
+
+    /// <inheritdoc />
+    [DataMember]
+    public string Catalogue { get; set; }
+
+    /// <inheritdoc />
+    [DataMember]
+    public string Scheme { get; set; }
+
+    /// <inheritdoc />
+    [DataMember]
+    public Dictionary<IamServiceType, Dictionary<string, string>> ExtendedProperties { get; set; }
+
+#endregion
 
     ///<summary>
     /// Are we using ActiveDirectory handler?
     ///</summary>
     public bool UsingActiveDirectory => Type == IamServiceType.ActiveDirectory;
-
-    ///<summary>
-    /// Cache timeout for info about user
-    ///</summary>
-    [DataMember]
-    public TimeSpan UserInfoCacheTimeout = TimeSpan.FromMinutes(3);
   }
 }

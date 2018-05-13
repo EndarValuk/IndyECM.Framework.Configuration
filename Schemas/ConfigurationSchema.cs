@@ -34,6 +34,6 @@ namespace IndyECM.Framework.Configuration.Schemas
     ///</summary>
     ///<returns>Returns API hosting configuration settings</returns>
     [DataMember]
-    public ApiSection API = new ApiSection();
+    public HostSection API = new HostSection();
   }
 }
