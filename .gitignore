@@ -3,6 +3,9 @@
 # IDE - VSCode
 /.vscode
 
-# build output
+# Build output
 /bin
 /obj
+
+# Misc files
+*.txt
