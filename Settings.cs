@@ -2,6 +2,8 @@
 using System.IO;
 using ServiceStack.Text;
 using IndyECM.Framework.Configuration.Schemas;
+using IndyECM.Framework.Core.Exceptions;
+using IndyECM.Framework.Definition.Enumeration.Types;
 
 namespace IndyECM.Framework.Configuration
 {
@@ -15,7 +17,24 @@ namespace IndyECM.Framework.Configuration
     ///</summary>
     ///<param name="fileName">Configuration file name without extension. Usually be a object type name</param>
     ///<returns>Returns instance of schema, defined in JSON file</returns>
-    public static ObjectStorageSchema Schema(string fileName) => ReadConfigFile<ObjectStorageSchema>(fileName);
+    public static string ObjectStorageSchemaValue(ObjectType objectType, QueryOperationType operationType)
+    {
+      var fileName = objectType.ToString();
+      var schema = Settings.ReadConfigFile<ObjectStorageSchema>(fileName);
+
+      try
+      {
+        return schema[operationType.ToString()];
+      }
+      catch(NullReferenceException ex)
+      {
+        throw new MutatedException(OperationResultType.ErrorConfigurationReadNotFound, ex.Message);
+      }
+      catch(Exception ex)
+      {
+        throw new MutatedException(OperationResultType.ErrorConfigurationReadBadInput, ex.Message);
+      }
+    }
 
     ///<summary>
     /// Reading application configuration from JSON file
@@ -38,14 +57,28 @@ namespace IndyECM.Framework.Configuration
 
       if(File.Exists(configPath))
       {
-        var text = File.ReadAllText(configPath);
-        return (T)JsonSerializer.DeserializeFromString(text, typeParameterType);
+        try
+        {
+          var text = File.ReadAllText(configPath);
+          return (T)JsonSerializer.DeserializeFromString(text, typeParameterType);
+        }
+        catch(Exception ex)
+        {
+          throw new MutatedException(OperationResultType.ErrorConfigurationRead, ex.Message);
+        }
       }
       else
       {
-        var defaults = new T();
-        File.WriteAllText(configPath, JsonSerializer.SerializeToString(defaults, typeParameterType));
-        return ReadConfigFile<T>(fileName);
+        try
+        {
+          var defaults = new T();
+          File.WriteAllText(configPath, JsonSerializer.SerializeToString(defaults, typeParameterType));
+          return ReadConfigFile<T>(fileName);
+        }
+        catch(Exception ex)
+        {
+          throw new MutatedException(OperationResultType.ErrorConfigurationAccess, ex.Message);
+        }
       }
     }
   }
