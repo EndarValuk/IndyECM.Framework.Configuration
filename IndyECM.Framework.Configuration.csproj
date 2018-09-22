@@ -8,12 +8,15 @@
   </PropertyGroup>
   <!-- External dependencies -->
   <ItemGroup>
-    <PackageReference Include="System.Data.SqlClient" Version="4.5.1" />
-    <PackageReference Include="Servicestack.Text" Version="5.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1"/>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1"/>
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.1"/>
+    <PackageReference Include="System.Data.SqlClient" Version="*"/>
+    <PackageReference Include="Servicestack.Text" Version="5.1.0"/>
   </ItemGroup>
   <!-- Local dependencies -->
   <ItemGroup>
-    <ProjectReference Include="..\Core\IndyECM.Framework.Core.csproj" />
-    <ProjectReference Include="..\Definition\IndyECM.Framework.Definition.csproj" />
+    <ProjectReference Include="..\Core\IndyECM.Framework.Core.csproj"/>
+    <ProjectReference Include="..\Definition\IndyECM.Framework.Definition.csproj"/>
   </ItemGroup>
 </Project>

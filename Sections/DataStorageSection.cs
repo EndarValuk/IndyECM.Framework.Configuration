@@ -9,19 +9,19 @@ namespace IndyECM.Framework.Configuration
   /// Data storage connection configuration section
   ///</summary>
   [DataContract]
-  public sealed class DataStorageSection : IReliableStorageServerSection<DatabaseType>
+  public sealed class DataStorageSection : IReliableStorageServerSection<StorageServerSection>
   {
     /// <inheritdoc />
     [DataMember]
-    public IStorageServerSection<DatabaseType> Main { get; set; }
+    public StorageServerSection Main { get; set; }
 
     /// <inheritdoc />
     [DataMember]
-    public IStorageServerSection<DatabaseType> Fallback { get; set; }
+    public StorageServerSection Fallback { get; set; }
 
     /// <inheritdoc />
     [DataMember]
-    public IStorageServerSection<DatabaseType> Cache { get; set; }
+    public StorageServerSection Cache { get; set; }
 
     ///<summary>
     /// Generated connection string, based on configured values
@@ -44,14 +44,15 @@ namespace IndyECM.Framework.Configuration
 
             var builder = new SqlConnectionStringBuilder
             {
-              ApplicationName = Settings.Config.Application.Name,
+              //ToDo: ApplicationName = Settings.Config.Application.Name,
               ConnectTimeout = (int)Main.ConnectTimeout.TotalSeconds,
               DataSource = $"{Main.Server},{Main.Port}",
               InitialCatalog = Main.Catalogue,
               IntegratedSecurity = usingIntegratedSecurity,
               // TODO: LoadBalanceTimeout = (int)Main..TotalSeconds,
-              MinPoolSize = 1,
-              MaxPoolSize = 10,
+              //MinPoolSize = 1,
+              //MaxPoolSize = 10,
+              PacketSize = 32768 // FIXME: On linux there is some perfomance bug with low packet size
             };
             // If reserve server defined, let connection string know about it
             if(Fallback != null)

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Runtime.Serialization;
 using IndyECM.Framework.Definition.Enumeration.Types;
 using IndyECM.Framework.Definition.Interfaces.Configuration;
